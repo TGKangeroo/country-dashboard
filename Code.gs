@@ -19,9 +19,9 @@ function checkDeadlines() {
   var confSheet = ss.getSheetByName("contact information");
   var contrlSheet= ss.getSheetByName("Control Panel")
   var lastcolumn = generalSheet.getRange('a1').getValue();
-  var sections = confSheet.getRange('H2').getValue();
-  var dashboard=confSheet.getRange('I2').getValue();
-  var link=confSheet.getRange('J2').getValue();
+  var sections = contrlSheet.getRange('E8').getValue();
+  var dashboard=contrlSheet.getRange('E6').getValue();
+  var link=contrlSheet.getRange('E9').getValue();
   var resultArray=[[]];
   var deadlineNames = generalSheet.getRange(2, 2, 1, lastcolumn).getValues();
   var deadlineDates = generalSheet.getRange(6, 2, 1, lastcolumn).getValues();
@@ -109,22 +109,18 @@ function test(){
 }
 
 
-
 //sends message to slack through webhook -- should be replaced with slack.app
 function triggerSlackRequest(channel, msg) {
-  var slackWebhook = "https://hooks.slack.com/services/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";
-  
-  var payload = { "channel": channel, "text": msg, "link_names": 1, "username": "ESN Austria Dashboard Bot", "icon_emoji": ":robot_face:" };
-  var options = { "method": "post", "contentType": "application/json", "muteHttpExceptions": true, "payload": JSON.stringify(payload) };
-  
-  Logger.log(UrlFetchApp.fetch(slackWebhook, options));
+ var payload = {token:SLACKBOT_TOKEN, channel:channel, text:msg,icon_emoji: ":robot_face:",username: "ESN Norway Dashboard Bot"};
+  UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {method: 'post', payload:payload});
 }
 
 //finds contact information of section
 function findInColumn(column, data) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet  = ss.getSheetByName("contact information");
-  var sections = sheet.getRange("H2")+1;
+  var confSheet = ss.getSheetByName("Control Panel");
+  var sections = confSheet.getRange("E8").getValue() +1;
   var column = sheet.getRange(column + ":" + sections);  // like A:A
   
   var values = column.getValues(); 
@@ -195,25 +191,7 @@ function ifempty(value){
   
 }
 
-//function in development for open call list generation
-function makeEvents(){
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var openCallSheet = ss.getSheetByName("Open calls");
-  var threads = GmailApp.search('label:international-international-events after:11/5/2019 before:11/8/2019');
-  for(var i = 0; i<threads.length;i++){
-    var messages= threads[i].getMessages();
-    
-    openCallSheet.appendRow([messages[0].getSubject()]);
-    var pdf = GmailUtils.messageToPdf(threads[i]);
-    var id = DriveApp.createFile(pdf).getId();
-    var file = DriveApp.getFileById(id);
-    
-    DriveApp.getFolderById(folderid).addFile(file);
-    DriveApp.getRootFolder().removeFile(file);
-    
-    
-  }
-}
+
 
 //Moves deadlines that have passed 5 days ago
 function moveDeadline(){

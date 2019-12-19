@@ -19,7 +19,7 @@ function doPost(request) {
 
 //adds the given deadline to the dashboard
 function addDeadline(){
-  var sheets = SpreadsheetApp.openById('1JcNjY-57dQGOAoIjOtml4hiTYLRykbbrnDfUQ6bD6Ho');
+  var sheets = SpreadsheetApp.openById(DASHBOARD_ID);
   var generalSheet = sheets.getSheetByName("General");
   var confSheet = sheets.getSheetByName("contact information");
   var contrlSheet= sheets.getSheetByName("Control Panel")
@@ -83,7 +83,7 @@ function sendMessage( userName) {
   var payload = {
     "channel": "@" + userName,
    // "channel" : "@jens",
-    "username": "ESN Austria Dasboard",
+    "username": "ESN Norway Dasboard",
     "icon_emoji": ":white_check_mark:",
     "link_names": 1,
     "attachments":[
@@ -97,7 +97,7 @@ function sendMessage( userName) {
     ]
   };
 
-  var url = 'https://hooks.slack.com/services/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';
+  var url = SLACK_WEBHOOK_SENDMESSAGE;
   var options = {
     'method': 'post',
     'payload': JSON.stringify(payload)
@@ -108,11 +108,13 @@ function sendMessage( userName) {
 
 //sends a response to a chosen channel when a deadline has been added to the dashboard
 function postResponse(channel, srcChannel, deadline, userName, reference, contactPerson, date) {
-
+   var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var contrlSheet= ss.getSheetByName("Control Panel")
+  var link=contrlSheet.getRange('E9').getValue();
   var payload = {
     "channel": "#" + channel,
    // "channel" : "@jens",
-    "username": "ESN Austria Dasboard",
+    "username": "ESN Norway Dasboard",
     "icon_emoji": ":white_check_mark:",
     "link_names": 1,
     "attachments":[
@@ -141,13 +143,18 @@ function postResponse(channel, srcChannel, deadline, userName, reference, contac
                 "title":"date",
                 "value": date,
                 "short": false
+             },
+                 {
+                "title":"url",
+                "value": link,
+                "short": false
              }
           ]
        }
     ]
   };
 
-  var url = 'https://hooks.slack.com/services/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';
+  var url = SLACK_WEBHOOK_POSTCHANNEL;
   var options = {
     'method': 'post',
     'payload': JSON.stringify(payload)
