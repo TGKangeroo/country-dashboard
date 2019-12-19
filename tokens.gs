@@ -1,8 +1,0 @@
-var SLACKBOT_TOKEN = 'xoxb-315346626038-815363484275-eFkaCderssY31VIpdEHmebYZ';
-var SLACK_WEBHOOK_SENDMESSAGE= 'https://hooks.slack.com/services/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';
-var SLACK_WEBHOOK_POSTCHANNEL = 'https://hooks.slack.com/services/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';
-var SLACK_WEBHOOK_POSTEVENT= 'https://hooks.slack.com/services/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';
-
-var DASHBOARD_ID='1RX9x6kSGZ3sCzosQsni-idbeOXCmQKNdxWakhQOoGFw';
-
-var DRIVE_FOLDER_ID= '1OSL6j6FdAkMYPIMvmy1jzxnhLXajoSpx';
