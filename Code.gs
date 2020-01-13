@@ -108,17 +108,13 @@ function test(){
   triggerSlackRequest('@jensi', 'test')
 }
 
-
-
 //sends message to slack through webhook -- should be replaced with slack.app
 function triggerSlackRequest(channel, msg) {
-  var slackWebhook = "https://hooks.slack.com/services/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";
-  
-  var payload = { "channel": channel, "text": msg, "link_names": 1, "username": "Yennefer", "icon_emoji": ":yennefer:" };
-  var options = { "method": "post", "contentType": "application/json", "muteHttpExceptions": true, "payload": JSON.stringify(payload) };
-  
-  Logger.log(UrlFetchApp.fetch(slackWebhook, options));
+ var payload = {token:SLACKBOT_TOKEN, channel:channel, text:msg,"username": "Yennefer", "icon_emoji": ":yennefer:"};
+ var options = { "method": "post", "contentType": "application/json", "muteHttpExceptions": true, "payload": JSON.stringify(payload)};
+   Logger.log(UrlFetchApp.fetch(slackWebhook, options));
 }
+
 
 //finds contact information of section
 function findInColumn(column, data) {

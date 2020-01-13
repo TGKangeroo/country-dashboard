@@ -45,7 +45,7 @@ function doGet(request){
 
 //adds the given deadline to the dashboard
 function addDeadline(){
-  var sheets = SpreadsheetApp.openById('1dhFsTk_IYydKs6oTmUpvtoeBaqHaz-B2iVNAa_cI19E');
+  var sheets = SpreadsheetApp.openById( DASHBOARD_ID);
   var generalSheet = sheets.getSheetByName("General");
   var confSheet = sheets.getSheetByName("contact information");
   var contrlSheet= sheets.getSheetByName("Control Panel")
@@ -141,41 +141,13 @@ var channel = contrlSheet.getRange('E5').getValue();
   postResponse(channel,params.channel_name,deadline,usr,reference,contactPerson,date);
 }else{
 
-sendMessage(params.user_name);
 }
 
 removeAddDeadline();
    
 }
 
-//sends a message to a slack user
-function sendMessage( userName) {
 
-  var payload = {
-    "channel": "@" + userName,
-   // "channel" : "@jens",
-    "username": "ESN Austria Dasboard",
-    "icon_emoji": ":white_check_mark:",
-    "link_names": 1,
-    "attachments":[
-       {
-          "fallback": "This is an update from a Slackbot integrated into your organization. Your client chose not to show the attachment.",
-          "pretext": "*Adding deadlines through slack was disabled, please contact your dashboard admin*",
-          "mrkdwn_in": ["pretext"],
-          "color": "#D00000"
-         
-       }
-    ]
-  };
-
-  var url = 'https://hooks.slack.com/services/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';
-  var options = {
-    'method': 'post',
-    'payload': JSON.stringify(payload)
-  };
-
-  var response = UrlFetchApp.fetch(url,options);
-}
 
 //sends a response to a chosen channel when a deadline has been added to the dashboard
 function postResponse(channel, srcChannel, deadline, userName, reference, contactPerson, date) {
@@ -208,7 +180,7 @@ function postResponse(channel, srcChannel, deadline, userName, reference, contac
     ]
   };
 
-  var url = 'https://hooks.slack.com/services/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';
+  var url = PRESIDENT_CHANNEL;
   var options = {
     'method': 'post',
     'payload': JSON.stringify(payload)
