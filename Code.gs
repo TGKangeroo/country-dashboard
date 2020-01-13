@@ -105,7 +105,7 @@ function checkDeadlines() {
 
 //tries the slack trigger
 function test(){
-  triggerSlackRequest('U3MMK9NC8', 'test')
+  triggerSlackRequest('@jensi', 'test')
 }
 
 
