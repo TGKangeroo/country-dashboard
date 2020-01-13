@@ -8,7 +8,7 @@ function makeEvents(){
   yesterday= Utilities.formatDate(yesterday, "CET", "MM/dd/yyyy");
   var tomorrow = new Date();
   tomorrow.setDate(today.getDate()+1);
-   tomorrow= Utilities.formatDate(tomorrow, "CET", "MM/dd/yyyy")
+  tomorrow= Utilities.formatDate(tomorrow, "CET", "MM/dd/yyyy")
   Logger.log(yesterday);
   var threads = GmailApp.search('label:international-international-events  OR label:international-open-calls after:' +  yesterday + ' before:' + tomorrow);  
   for(var i = 0; i<threads.length;i++){
@@ -25,17 +25,22 @@ function makeEvents(){
       var subject=messages[0].getSubject();
       var type =findType(messages[0].getSubject());
       var country =findCountry(messages[0].getSubject(),messages[0].getPlainBody());
-      DriveApp.getFolderById(DRIVE_FOLDER_ID).addFile(file);
+      DriveApp.getFolderById('1OSL6j6FdAkMYPIMvmy1jzxnhLXajoSpx').addFile(file);
       DriveApp.getRootFolder().removeFile(file);
       file.setSharing(DriveApp.Access.ANYONE, DriveApp.Permission.VIEW)
       openCallSheet.appendRow(['=HYPERLINK("' + file.getUrl() + '", "'+ subject + '")',type,country,new Date()]);
-    
-    postEvent('testwebhooks','Your international future',subject ,country,type,file.getUrl())
+      
+      useType(i+1,country,type,file.getUrl(),'Your international future')
+     
     }
   }
   openCallSheet.sort(4,false);
 }
 
+
+function test(){
+ useType(1+1,'Your international future','Belgium','SI','','Heidi');
+}
 function findType(subject){
   if(subject.indexOf('NP') > -1 || subject.toLowerCase().indexOf('national platform') > -1){
     return "NP";
@@ -46,6 +51,7 @@ function findType(subject){
   if(subject.toLowerCase().indexOf('open call') > -1 ||subject.toLowerCase().indexOf('call for') > -1 ){
     return "Open Call";
   }
+  
   
   return "Open Call";
   
@@ -72,7 +78,7 @@ function cleanEvents(){
 }
 
 function cleanDrive(){
-  var folderID=DRIVE_FOLDER_ID;
+  var folderID='1OSL6j6FdAkMYPIMvmy1jzxnhLXajoSpx';
   var files = DriveApp.getFolderById(folderID).getFiles();
   while (files.hasNext()) {
     var file = files.next();
@@ -95,48 +101,60 @@ function cleanList(){
   
   openCallSheet.deleteRows(start, end);
 }
-
-function postEvent(channel,userName,subject,country,type,file){
-
-var reference = type + " " + country;
-var payload = {
-    "channel": "#" + channel,
-    "username": "ESN Austria Dasboard",
+function useType(row,subject,country,type,file,userName){
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var openCallSheet = ss.getSheetByName("Open Calls");
+  var data = openCallSheet.getRange('B' + row).getValue();
+  var webhook="";
+  if(data== "SI"){
+   webhook='https://hooks.slack.com/services/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';
+  }else{
+    webhook='https://hooks.slack.com/services/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';
+  }
+  
+   postEvent(userName,subject,country,type,file,webhook);
+  
+}
+function postEvent(userName,subject,country,type,file,webhook){
+  
+  var reference = type + " " + country;
+  var payload = {
+    "username": "Heidi",
     "icon_emoji": ":white_check_mark:",
     "link_names": 1,
     "attachments":[
-       {
-          "fallback": "This is an update from a Slackbot integrated into your organization. Your client chose not to show the attachment.",
-          "pretext": "*" + userName + "* added a new opportunity",
-          "mrkdwn_in": ["pretext"],
-          "color": "#D00000",
-          "fields":[
-         {
-                "title":"subject",
-                "value": subject,
-                "short":false
-             },
-             {
-                "title":"what?",
-                "value": reference,
-                "short":false
-             },
-             {
-                "title":"Email",
-                "value": file,
-                "short":false
-             }
-             
-          ]
-       }
+      {
+        "fallback": "This is an update from a Slackbot integrated into your organization. Your client chose not to show the attachment.",
+        "pretext": "*" + userName + "* added a new opportunity",
+        "mrkdwn_in": ["pretext"],
+        "color": "#D00000",
+        "fields":[
+        {
+        "title":"subject",
+        "value": subject,
+        "short":false
+      },
+      {
+        "title":"what?",
+        "value": reference,
+        "short":false
+      },
+      {
+        "title":"Email",
+        "value": file,
+        "short":false
+      }
+      
     ]
-  };
+  }
+  ]
+};
 
-  var url = SLACK_WEBHOOK_POSTEVENT;
-  var options = {
-    'method': 'post',
-    'payload': JSON.stringify(payload)
-  };
+var url = webhook;
+var options = {
+  'method': 'post',
+  'payload': JSON.stringify(payload)
+};
 
-  var response = UrlFetchApp.fetch(url,options);
+var response = UrlFetchApp.fetch(url,options);
 }

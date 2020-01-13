@@ -19,9 +19,9 @@ function checkDeadlines() {
   var confSheet = ss.getSheetByName("contact information");
   var contrlSheet= ss.getSheetByName("Control Panel")
   var lastcolumn = generalSheet.getRange('a1').getValue();
-  var sections = contrlSheet.getRange('E8').getValue();
-  var dashboard=contrlSheet.getRange('E6').getValue();
-  var link=contrlSheet.getRange('E9').getValue();
+  var sections = confSheet.getRange('H2').getValue();
+  var dashboard=confSheet.getRange('I2').getValue();
+  var link=confSheet.getRange('J2').getValue();
   var resultArray=[[]];
   var deadlineNames = generalSheet.getRange(2, 2, 1, lastcolumn).getValues();
   var deadlineDates = generalSheet.getRange(6, 2, 1, lastcolumn).getValues();
@@ -109,18 +109,22 @@ function test(){
 }
 
 
+
 //sends message to slack through webhook -- should be replaced with slack.app
 function triggerSlackRequest(channel, msg) {
- var payload = {token:SLACKBOT_TOKEN, channel:channel, text:msg,icon_emoji: ":robot_face:",username: "ESN Norway Dashboard Bot"};
-  UrlFetchApp.fetch('https://slack.com/api/chat.postMessage', {method: 'post', payload:payload});
+  var slackWebhook = "https://hooks.slack.com/services/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";
+  
+  var payload = { "channel": channel, "text": msg, "link_names": 1, "username": "Yennefer", "icon_emoji": ":yennefer:" };
+  var options = { "method": "post", "contentType": "application/json", "muteHttpExceptions": true, "payload": JSON.stringify(payload) };
+  
+  Logger.log(UrlFetchApp.fetch(slackWebhook, options));
 }
 
 //finds contact information of section
 function findInColumn(column, data) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet  = ss.getSheetByName("contact information");
-  var confSheet = ss.getSheetByName("Control Panel");
-  var sections = confSheet.getRange("E8").getValue() +1;
+  var sections = sheet.getRange("H2").getValue()+1;
   var column = sheet.getRange(column + ":" + sections);  // like A:A
   
   var values = column.getValues(); 
